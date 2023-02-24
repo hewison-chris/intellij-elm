@@ -36,7 +36,11 @@
 
     <change-notes><![CDATA[
         <ul>
-            <li><b>4.4.0</b> <em>(2021-04-01)</em>
+            <li><b>4.5.0</b> <em>(2023-02-24)</em>
+                <ul>
+                    <li>Special release based on 4.4.0 with move file enabled</li>
+                </ul>
+            </li><li><b>4.4.0</b> <em>(2021-04-01)</em>
                 <ul>
                     <li>Enable support for IntelliJ 2021.1.x</li>
                     <li>Add intention for inserting parens around expressions</li>
