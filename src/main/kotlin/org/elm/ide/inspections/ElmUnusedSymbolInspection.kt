@@ -40,13 +40,17 @@ class ElmUnusedSymbolInspection : ElmLocalInspection() {
             val searchCost = PsiSearchHelper.getInstance(project).isCheapEnoughToSearch(name, scope, null, null)
             if (searchCost == TOO_MANY_OCCURRENCES) return
         }
-
         // perform Find Usages
-        val usages = ReferencesSearch.search(element).findAll()
+        try {
+            val usages = ReferencesSearch.search(element).findAll()
                 .filterNot { it.element is ElmTypeAnnotation || it.element is ElmExposedItemTag }
 
-        if (usages.isEmpty()) {
-            markAsUnused(holder, element, name)
+            if (usages.isEmpty()) {
+                markAsUnused(holder, element, name)
+            }
+        } catch (e: Exception)
+        {
+            // Let's not fail on this
         }
     }
 

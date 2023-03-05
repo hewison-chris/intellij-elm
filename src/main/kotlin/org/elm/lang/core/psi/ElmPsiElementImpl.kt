@@ -46,7 +46,7 @@ abstract class ElmPsiElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), El
 
     // Make the type-system happy by using our reference interface instead of PsiReference
     override fun getReferences(): Array<ElmReference> {
-        val ref = getReference() as? ElmReference ?: return EMPTY_REFERENCE_ARRAY
+        val ref = reference as? ElmReference ?: return EMPTY_REFERENCE_ARRAY
         return arrayOf(ref)
     }
 }
@@ -86,4 +86,4 @@ abstract class ElmStubbedElement<StubT : StubElement<*>>
             "${javaClass.simpleName}($elementType)"
 }
 
-private val EMPTY_REFERENCE_ARRAY = emptyArray<ElmReference>()
+internal val EMPTY_REFERENCE_ARRAY = emptyArray<ElmReference>()

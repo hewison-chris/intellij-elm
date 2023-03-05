@@ -90,22 +90,26 @@ class ImportVisitor(initialImports: List<ElmImportClause>) : PsiElementVisitor()
 
     override fun visitElement(element: PsiElement) {
         super.visitElement(element)
-        if (element is ElmReferenceElement && element !is ElmImportClause && element !is ElmExposedItemTag) {
-            val reference = element.reference
-            val resolved = reference.resolve() ?: return
-            val resolvedModule = resolved.elmFile.getModuleDecl() ?: return
-            val resolvedModuleName = resolvedModule.name
-            imports.remove(resolvedModuleName)
+        try {
+            if (element is ElmReferenceElement && element !is ElmImportClause && element !is ElmExposedItemTag) {
+                val reference = element.reference
+                val resolved = reference.resolve() ?: return
+                val resolvedModule = resolved.elmFile.getModuleDecl() ?: return
+                val resolvedModuleName = resolvedModule.name
+                imports.remove(resolvedModuleName)
 
-            // For now we are just going to mark exposed values/functions which are unused
-            // TODO expand this to types, union variant constructors, and operators
-            if (reference is LexicalValueReference) {
-                exposing.remove(element.referenceName)
-            }
+                // For now we are just going to mark exposed values/functions which are unused
+                // TODO expand this to types, union variant constructors, and operators
+                if (reference is LexicalValueReference) {
+                    exposing.remove(element.referenceName)
+                }
 
-            if (reference is QualifiedReference) {
-                moduleAliases.remove(reference.qualifierPrefix)
+                if (reference is QualifiedReference) {
+                    moduleAliases.remove(reference.qualifierPrefix)
+                }
             }
+        } catch (e: Exception) {
+            // Let's not fail on this
         }
     }
 }

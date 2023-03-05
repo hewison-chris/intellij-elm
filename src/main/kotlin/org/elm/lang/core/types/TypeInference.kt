@@ -444,6 +444,7 @@ private class InferenceScope(
             atom is ElmLetInExpr -> inferChild { beginLetInInference(atom) }.ty
             atom is ElmCaseOfExpr -> inferCase(atom)
             atom is ElmParenthesizedExpr -> inferExpression(atom.expression)
+            atom is ElmValueExpr && atom.valueQID == null && atom.upperCaseQID == null -> TyUnknown()
             atom.hasErrors -> TyUnknown()
             else -> when (atom) {
                 is ElmAnonymousFunctionExpr -> inferLambda(atom)

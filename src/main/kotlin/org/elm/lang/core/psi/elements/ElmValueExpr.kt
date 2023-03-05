@@ -47,7 +47,7 @@ class ElmValueExpr(node: ASTNode) : ElmPsiElementImpl(node), ElmReferenceElement
                     QualifiedConstructor
                 else
                     BareConstructor
-            else -> error("one QID must be non-null")
+            else -> error("one QID must be non-null. Elm file=${this.elmFile.name}, name = ${this.name}")
         }
 
     /**
@@ -69,19 +69,24 @@ class ElmValueExpr(node: ASTNode) : ElmPsiElementImpl(node), ElmReferenceElement
 
 
     override fun getReference(): ElmReference =
-            getReferences().first()
+            references.first()
 
-    override fun getReferences(): Array<ElmReference> =
-            when (flavor) {
-                QualifiedValue -> arrayOf(
-                        QualifiedValueReference(this, valueQID!!),
-                        ModuleNameQualifierReference(this, valueQID!!, valueQID!!.qualifierPrefix)
-                )
-                QualifiedConstructor -> arrayOf(
-                        QualifiedConstructorReference(this, upperCaseQID!!),
-                        ModuleNameQualifierReference(this, upperCaseQID!!, upperCaseQID!!.qualifierPrefix)
-                )
-                BareValue -> arrayOf(LexicalValueReference(this))
-                BareConstructor -> arrayOf(SimpleUnionOrRecordConstructorReference(this))
-            }
+    override fun getReferences(): Array<ElmReference> {
+        if (valueQID == null && upperCaseQID == null)
+            return EMPTY_REFERENCE_ARRAY
+        return when (flavor) {
+            QualifiedValue -> arrayOf(
+                QualifiedValueReference(this, valueQID!!),
+                ModuleNameQualifierReference(this, valueQID!!, valueQID!!.qualifierPrefix)
+            )
+
+            QualifiedConstructor -> arrayOf(
+                QualifiedConstructorReference(this, upperCaseQID!!),
+                ModuleNameQualifierReference(this, upperCaseQID!!, upperCaseQID!!.qualifierPrefix)
+            )
+
+            BareValue -> arrayOf(LexicalValueReference(this))
+            BareConstructor -> arrayOf(SimpleUnionOrRecordConstructorReference(this))
+        }
+    }
 }

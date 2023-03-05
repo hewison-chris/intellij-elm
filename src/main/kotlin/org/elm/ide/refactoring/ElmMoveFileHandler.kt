@@ -69,7 +69,9 @@ class ElmMoveFileHandler : MoveFileHandler() {
                             elmPsiFactory.createTypeRef(
                                 newModuleDeclaration.upperCaseQID.text,
                             newModuleDeclaration.upperCaseQID.text + '.' +  valueQID.lowerCaseIdentifier.text
-                            )?.let { valueExpr -> oldToNewMap[valueQID] = valueExpr }
+                            )?.let { valueExpr ->
+                                if (valueExpr.upperCaseQID != null || valueExpr.valueQID != null)
+                                    oldToNewMap[valueQID] = valueExpr }
                         }
                     }
                 }

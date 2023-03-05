@@ -55,6 +55,7 @@ import org.elm.workspace.EmptyElmStdlibVariant
 import org.elm.workspace.MinimalElmStdlibVariant
 import org.elm.workspace.elmWorkspace
 import org.intellij.lang.annotations.Language
+import java.util.*
 
 private val log = logger<ElmTestBase>()
 
@@ -266,7 +267,7 @@ abstract class ElmTestBase : BasePlatformTestCase(), ElmTestCase {
             if (' ' in name) return name.replace(" ", "_")
 
             return name.split("(?=[A-Z])".toRegex())
-                    .map(String::toLowerCase)
+                    .map(String::lowercase)
                     .joinToString("_")
         }
 

@@ -28,50 +28,53 @@ import org.elm.lang.core.resolve.scope.ModuleScope
 class ElmUnresolvedReferenceInspection : ElmLocalInspection() {
 
     override fun visitElement(element: ElmPsiElement, holder: ProblemsHolder, isOnTheFly: Boolean) {
-        val refs = element.references.toMutableList()
-
-        // Pre-processing: ignore any qualified value/type refs where the module qualifier could not be resolved.
-        // This is necessary because a single Psi element like ElmValueExpr can return multiple references:
-        // one for the module name and the other for the value/type name. If the former reference cannot be resolved,
-        // then the latter is guaranteed not to resolve. And we don't want to double-report the error, so we will
-        // instead filter them out.
-        if (refs.any { it is ModuleNameQualifierReference<*> && it.resolve() == null }) {
-            refs.removeIf { it is QualifiedReference }
-        }
-
-        for (ref in refs.filter { it.resolve() == null }) {
-            // Give each handler a chance to deal with the unresolved ref before falling back on an error
-            if (handleTypeAnnotation(ref, element, holder)) continue
-            if (handleSafeToIgnore(ref, element, holder)) continue
-            if (handleModuleHiddenByAlias(ref, element, holder)) continue
-
-            // Generic unresolved ref error
-            //
-            // Most of the time an ElmReferenceElement is not the ancestor of any other ElmReferenceElement.
-            // And in these cases, it's ok to treat the error as spanning the entire reference element.
-            // However, in cases like ElmTypeRef, its children can also be reference elements,
-            // and so it is vital that we correctly mark the error only on the text range that
-            // contributed the reference.
-            val errorRange = (element as? ElmTypeRef)?.upperCaseQID?.textRangeInParent
-
-            val fixes = mutableListOf<LocalQuickFix>()
-            val qualifierContext = AddQualifierFix.findApplicableContext(element)
-            val importContext = AddImportFix.findApplicableContext(element)
-
-            if (importContext != null) {
-                val t = importContext.candidates[0]
-                fixes += NamedQuickFixHint(
-                        element = element,
-                        delegate = AddImportFix(),
-                        hint = "${t.moduleName}.${t.nameToBeExposed}",
-                        multiple = importContext.candidates.size > 1
-                )
+        try {
+            val refs = element.references.toMutableList()
+            // Pre-processing: ignore any qualified value/type refs where the module qualifier could not be resolved.
+            // This is necessary because a single Psi element like ElmValueExpr can return multiple references:
+            // one for the module name and the other for the value/type name. If the former reference cannot be resolved,
+            // then the latter is guaranteed not to resolve. And we don't want to double-report the error, so we will
+            // instead filter them out.
+            if (refs.any { it is ModuleNameQualifierReference<*> && it.resolve() == null }) {
+                refs.removeIf { it is QualifiedReference }
             }
-            if (qualifierContext != null) {
-                fixes += AddQualifierFix()
+
+            for (ref in refs.filter { it.resolve() == null }) {
+                // Give each handler a chance to deal with the unresolved ref before falling back on an error
+                if (handleTypeAnnotation(ref, element, holder)) continue
+                if (handleSafeToIgnore(ref, element, holder)) continue
+                if (handleModuleHiddenByAlias(ref, element, holder)) continue
+
+                // Generic unresolved ref error
+                //
+                // Most of the time an ElmReferenceElement is not the ancestor of any other ElmReferenceElement.
+                // And in these cases, it's ok to treat the error as spanning the entire reference element.
+                // However, in cases like ElmTypeRef, its children can also be reference elements,
+                // and so it is vital that we correctly mark the error only on the text range that
+                // contributed the reference.
+                val errorRange = (element as? ElmTypeRef)?.upperCaseQID?.textRangeInParent
+
+                val fixes = mutableListOf<LocalQuickFix>()
+                val qualifierContext = AddQualifierFix.findApplicableContext(element)
+                val importContext = AddImportFix.findApplicableContext(element)
+
+                if (importContext != null) {
+                    val t = importContext.candidates[0]
+                    fixes += NamedQuickFixHint(
+                            element = element,
+                            delegate = AddImportFix(),
+                            hint = "${t.moduleName}.${t.nameToBeExposed}",
+                            multiple = importContext.candidates.size > 1
+                    )
+                }
+                if (qualifierContext != null) {
+                    fixes += AddQualifierFix()
+                }
+                val description = "Unresolved reference '${ref.canonicalText}'"
+                holder.registerProblem(element, description, LIKE_UNKNOWN_SYMBOL, errorRange, *fixes.toTypedArray())
             }
-            val description = "Unresolved reference '${ref.canonicalText}'"
-            holder.registerProblem(element, description, LIKE_UNKNOWN_SYMBOL, errorRange, *fixes.toTypedArray())
+        } catch (e: Exception) {
+            // Let's not fail on this
         }
     }
 
