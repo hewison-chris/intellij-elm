@@ -29,17 +29,21 @@ class MakeDeclarationFix(element: ElmPsiElement) : LocalQuickFixAndIntentionActi
     }
 
     private fun findApplicableContext(): Context? {
-        val element = startElement as? ElmPsiElement ?: return null
+        try {
+            val element = startElement as? ElmPsiElement ?: return null
 
-        val typeAnnotation = element.parentOfType<ElmTypeAnnotation>(strict = false)
-                ?: return null
+            val typeAnnotation = element.parentOfType<ElmTypeAnnotation>(strict = false)
+                    ?: return null
 
-        if (typeAnnotation.reference.resolve() != null) {
-            // the target declaration already exists; nothing needs to be done
+            if (typeAnnotation.reference.resolve() != null) {
+                // the target declaration already exists; nothing needs to be done
+                return null
+            }
+
+            return Context(typeAnnotation)
+        } catch (e: Exception) {
             return null
         }
-
-        return Context(typeAnnotation)
     }
 
     override fun invoke(project: Project, file: PsiFile, editor: Editor?, startElement: PsiElement, endElement: PsiElement) {

@@ -53,17 +53,18 @@ class AddImportFix : NamedQuickFix("Import", Priority.HIGH) {
 
     companion object {
         fun findApplicableContext(psiElement: PsiElement): Context? {
-            val element = psiElement as? ElmPsiElement ?: return null
-            if (element.parentOfType<ElmImportClause>() != null) return null
-            val refElement = element.parentOfType<ElmReferenceElement>(strict = false) ?: return null
-            val ref = refElement.reference
+            try {
+                val element = psiElement as? ElmPsiElement ?: return null
+                if (element.parentOfType<ElmImportClause>() != null) return null
+                val refElement = element.parentOfType<ElmReferenceElement>(strict = false) ?: return null
+                val ref = refElement.reference
 
-            // we can't import the function we're annotating
-            if (refElement is ElmTypeAnnotation) return null
+                // we can't import the function we're annotating
+                if (refElement is ElmTypeAnnotation) return null
 
-            val typeAllowed = element is ElmTypeRef
-            val name = refElement.referenceName
-            val candidates = ElmLookup.findByName<ElmExposableTag>(name, refElement.elmFile)
+                val typeAllowed = element is ElmTypeRef
+                val name = refElement.referenceName
+                val candidates = ElmLookup.findByName<ElmExposableTag>(name, refElement.elmFile)
                     .filter {
                         val isType = it is ElmTypeDeclaration || it is ElmTypeAliasDeclaration
                         typeAllowed == isType
@@ -71,10 +72,13 @@ class AddImportFix : NamedQuickFix("Import", Priority.HIGH) {
                     .mapNotNull { fromExposableElement(it, ref) }
                     .sortedWith(referenceComparator(ref))
 
-            if (candidates.isEmpty())
-                return null
+                if (candidates.isEmpty())
+                    return null
 
-            return Context(name, candidates, ref is QualifiedReference)
+                return Context(name, candidates, ref is QualifiedReference)
+            } catch (e: Exception) {
+                return null
+            }
         }
 
         private fun referenceComparator(ref: ElmReference): Comparator<Import> {
