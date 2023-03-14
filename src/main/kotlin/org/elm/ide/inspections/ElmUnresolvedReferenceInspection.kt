@@ -4,6 +4,7 @@ import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemHighlightType.LIKE_UNKNOWN_SYMBOL
 import com.intellij.codeInspection.ProblemHighlightType.WEAK_WARNING
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import org.elm.ide.inspections.import.AddImportFix
@@ -15,11 +16,7 @@ import org.elm.lang.core.psi.elements.ElmImportClause
 import org.elm.lang.core.psi.elements.ElmTypeAnnotation
 import org.elm.lang.core.psi.elements.ElmTypeRef
 import org.elm.lang.core.psi.elements.ElmValueExpr
-import org.elm.lang.core.resolve.reference.ModuleNameQualifierReference
-import org.elm.lang.core.resolve.reference.QualifiedConstructorReference
-import org.elm.lang.core.resolve.reference.QualifiedReference
-import org.elm.lang.core.resolve.reference.QualifiedTypeReference
-import org.elm.lang.core.resolve.reference.QualifiedValueReference
+import org.elm.lang.core.resolve.reference.*
 import org.elm.lang.core.resolve.scope.GlobalScope
 import org.elm.lang.core.resolve.scope.ImportScope
 import org.elm.lang.core.resolve.scope.ModuleScope
@@ -74,7 +71,7 @@ class ElmUnresolvedReferenceInspection : ElmLocalInspection() {
                 holder.registerProblem(element, description, LIKE_UNKNOWN_SYMBOL, errorRange, *fixes.toTypedArray())
             }
         } catch (e: Exception) {
-            // Let's not fail on this
+//            Messages.showMessageDialog(e.localizedMessage,"ElmUnresolvedReferenceInspection.visitElement", null)
         }
     }
 

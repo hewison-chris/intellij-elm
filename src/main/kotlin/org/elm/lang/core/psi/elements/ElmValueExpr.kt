@@ -1,6 +1,8 @@
 package org.elm.lang.core.psi.elements
 
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiElement
 import org.elm.lang.core.psi.*
 import org.elm.lang.core.psi.elements.Flavor.*
@@ -72,8 +74,13 @@ class ElmValueExpr(node: ASTNode) : ElmPsiElementImpl(node), ElmReferenceElement
             references.first()
 
     override fun getReferences(): Array<ElmReference> {
-        if (valueQID == null && upperCaseQID == null)
+        if (valueQID == null && upperCaseQID == null) {
+//            ApplicationManager.getApplication().invokeLater(
+//                () -> Messages.showMessageDialog("Both valueQID and upperCaseQID are null!","ElmValueExpr.getReferences", null),
+//            ModalityState.any())
+//            )
             return EMPTY_REFERENCE_ARRAY
+        }
         return when (flavor) {
             QualifiedValue -> arrayOf(
                 QualifiedValueReference(this, valueQID!!),

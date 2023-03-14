@@ -12,29 +12,36 @@ class ElmMoveNestedFileTest : ElmWorkspaceTestBase() {
     }
 
     fun `test change module declaration`() {
-        myFixture.moveFile("src/B/C/Hello.elm", "src/A")
-        myFixture.checkResult("src/A/Hello.elm",
+        myFixture.moveFile("src/Name.elm", "src/B/")
+        myFixture.checkResult("src/B/Name.elm",
             """
-                module A.Hello exposing (hello)
-    
-                hello : String
-                hello = "Hello"
-            """.trimIndent(),
+            module B.Name exposing (Name(..), name)
+            
+            type Name = First | Second
+                
+            name : Name -> String
+            name n =
+                case n of
+                    First -> "Chris"
+                    Second -> "Hewison"
+        """.trimIndent(),
             true)
     }
 
     fun `test change import statements`() {
-        myFixture.moveFile("src/B/C/Hello.elm", "src/A")
+        myFixture.moveFile("src/Name.elm", "src/B")
         myFixture.checkResult("src/Main.elm",
             """
                 module Main exposing (main)
 
+                import String exposing(concat)
+                
                 import A.Hello
+                import B.Name exposing (Name, name)
                 import Html exposing (text)
-                import String exposing (append)
                 
                 main : Html.Html msg
-                main = text A.Hello.hello
+                main =  text (concat [(concat [B.C.D.A.Hello.hello, (name B.Name.First)]), (name B.Name.Second)])
             """.trimIndent(),
             true)
     }
@@ -70,31 +77,41 @@ class ElmMoveNestedFileTest : ElmWorkspaceTestBase() {
                 """.trimIndent()
             )
             dir("src") {
-                dir("A") {}
-                dir("B") {
-                    dir("C") {
-                        elm(
-                            "Hello.elm", """
+                dir("A") {
+                    elm(
+                        "Hello.elm", """
                             module A.Hello exposing (hello)
 
                             hello : String
                             hello = "Hello"
                     """.trimIndent()
-                        )
-                    }
+                    )
                 }
-                elm(
-                    "Main.elm", """
+                dir("B") {}
+                elm("Main.elm", """
                     module Main exposing (main)
 
+                    import String exposing(concat)
+                    
                     import A.Hello
+                    import Name exposing (Name, name)
                     import Html exposing (text)
-                    import String exposing (append)
                     
                     main : Html.Html msg
-                    main = text A.Hello.hello
+                    main =  text (concat [(concat [B.C.D.A.Hello.hello, (name Name.First)]), (name Name.Second)])
                 """.trimIndent()
                 )
+                elm("Name.elm", """
+                    module Name exposing (Name(..), name)
+
+                    type Name = First | Second
+                    
+                    name : Name -> String
+                    name n =
+                        case n of
+                            First -> "Chris"
+                            Second -> "Hewison"
+                """.trimIndent())
             }
         }
 }

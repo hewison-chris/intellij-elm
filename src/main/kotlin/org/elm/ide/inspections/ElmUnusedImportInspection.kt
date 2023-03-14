@@ -3,6 +3,7 @@ package org.elm.ide.inspections
 import com.intellij.codeInsight.actions.OptimizeImportsProcessor
 import com.intellij.codeInspection.*
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Key
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
@@ -109,7 +110,7 @@ class ImportVisitor(initialImports: List<ElmImportClause>) : PsiElementVisitor()
                 }
             }
         } catch (e: Exception) {
-            // Let's not fail on this
+//            Messages.showMessageDialog(e.localizedMessage,"ElmUnusedImportInspection.visitElement", null)
         }
     }
 }

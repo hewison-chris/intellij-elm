@@ -3,6 +3,7 @@ package org.elm.ide.inspections
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiElement
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.PsiSearchHelper
@@ -50,7 +51,7 @@ class ElmUnusedSymbolInspection : ElmLocalInspection() {
             }
         } catch (e: Exception)
         {
-            // Let's not fail on this
+//            Messages.showMessageDialog(e.localizedMessage,"ElmUnusedSymbolInspection.visitElement", null)
         }
     }
 
