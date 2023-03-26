@@ -1,9 +1,12 @@
 package org.elm.ide.inspections
 
+import com.google.api.Logging
 import com.intellij.codeInspection.LocalQuickFix
 import com.intellij.codeInspection.ProblemHighlightType.LIKE_UNKNOWN_SYMBOL
 import com.intellij.codeInspection.ProblemHighlightType.WEAK_WARNING
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
@@ -71,7 +74,9 @@ class ElmUnresolvedReferenceInspection : ElmLocalInspection() {
                 holder.registerProblem(element, description, LIKE_UNKNOWN_SYMBOL, errorRange, *fixes.toTypedArray())
             }
         } catch (e: Exception) {
-//            Messages.showMessageDialog(e.localizedMessage,"ElmUnresolvedReferenceInspection.visitElement", null)
+            ApplicationManager.getApplication().invokeLater {
+                Logging.getDefaultInstance().thisLogger().debug("ElmUnresolvedReferenceInspection.visitElement:" + e.localizedMessage)
+            }
         }
     }
 

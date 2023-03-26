@@ -1,7 +1,10 @@
 package org.elm.lang.core.psi.elements
 
+import com.google.api.Logging
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiElement
 import org.elm.lang.core.psi.*
@@ -75,10 +78,9 @@ class ElmValueExpr(node: ASTNode) : ElmPsiElementImpl(node), ElmReferenceElement
 
     override fun getReferences(): Array<ElmReference> {
         if (valueQID == null && upperCaseQID == null) {
-//            ApplicationManager.getApplication().invokeLater(
-//                () -> Messages.showMessageDialog("Both valueQID and upperCaseQID are null!","ElmValueExpr.getReferences", null),
-//            ModalityState.any())
-//            )
+            ApplicationManager.getApplication().invokeLater {
+                Logging.getDefaultInstance().thisLogger().debug("Both valueQID and upperCaseQID are null ion ElmValueExpr.getReferences")
+            }
             return EMPTY_REFERENCE_ARRAY
         }
         return when (flavor) {

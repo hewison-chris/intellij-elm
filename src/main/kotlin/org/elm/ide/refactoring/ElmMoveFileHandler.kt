@@ -1,5 +1,6 @@
 package org.elm.ide.refactoring
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
@@ -69,11 +70,8 @@ class ElmMoveFileHandler : MoveFileHandler() {
                         if (valueQID != null && valueQID.isQualified) {
                             elmPsiFactory.createTypeRef(
                                 newModuleDeclaration.upperCaseQID.text,
-                            newModuleDeclaration.upperCaseQID.text + '.' +  valueQID.lowerCaseIdentifier.text
-                            )?.let { valueExpr ->
-                                if (valueExpr.upperCaseQID != null || valueExpr.valueQID != null)
-//                                    Messages.showMessageDialog("Both upperCaseQID and valueQID are null!","ElmMoveFileHandler.prepareMovedFile", null)
-                                    oldToNewMap[valueQID] = valueExpr }
+                                newModuleDeclaration.upperCaseQID.text + '.' +  valueQID.lowerCaseIdentifier.text
+                            )?.let { valueExpr -> oldToNewMap[valueQID] = valueExpr }
                         }
                     }
                 }

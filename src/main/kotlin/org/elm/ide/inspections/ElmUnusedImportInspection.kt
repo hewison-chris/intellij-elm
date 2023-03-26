@@ -1,7 +1,10 @@
 package org.elm.ide.inspections
 
+import com.google.api.Logging
 import com.intellij.codeInsight.actions.OptimizeImportsProcessor
 import com.intellij.codeInspection.*
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.Key
@@ -110,7 +113,9 @@ class ImportVisitor(initialImports: List<ElmImportClause>) : PsiElementVisitor()
                 }
             }
         } catch (e: Exception) {
-//            Messages.showMessageDialog(e.localizedMessage,"ElmUnusedImportInspection.visitElement", null)
+            ApplicationManager.getApplication().invokeLater {
+                Logging.getDefaultInstance().thisLogger().debug("ElmUnusedImportInspection.visitElement:" + e.localizedMessage)
+            }
         }
     }
 }

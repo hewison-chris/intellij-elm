@@ -1,7 +1,10 @@
 package org.elm.ide.inspections
 
+import com.google.api.Logging
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.thisLogger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiElement
@@ -51,7 +54,9 @@ class ElmUnusedSymbolInspection : ElmLocalInspection() {
             }
         } catch (e: Exception)
         {
-//            Messages.showMessageDialog(e.localizedMessage,"ElmUnusedSymbolInspection.visitElement", null)
+            ApplicationManager.getApplication().invokeLater {
+                Logging.getDefaultInstance().thisLogger().debug("ElmUnusedSymbolInspection.visitElement" + e.localizedMessage)
+            }
         }
     }
 

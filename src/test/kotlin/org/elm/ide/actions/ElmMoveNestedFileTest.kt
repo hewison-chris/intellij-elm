@@ -41,7 +41,7 @@ class ElmMoveNestedFileTest : ElmWorkspaceTestBase() {
                 import Html exposing (text)
                 
                 main : Html.Html msg
-                main =  text (concat [(concat [B.C.D.A.Hello.hello, (name B.Name.First)]), (name B.Name.Second)])
+                main =  text (concat [(concat [A.Hello.hello, (name B.Name.First)]), (name B.Name.Second)])
             """.trimIndent(),
             true)
     }
@@ -98,7 +98,7 @@ class ElmMoveNestedFileTest : ElmWorkspaceTestBase() {
                     import Html exposing (text)
                     
                     main : Html.Html msg
-                    main =  text (concat [(concat [B.C.D.A.Hello.hello, (name Name.First)]), (name Name.Second)])
+                    main =  text (concat [(concat [A.Hello.hello, (name Name.First)]), (name Name.Second)])
                 """.trimIndent()
                 )
                 elm("Name.elm", """
