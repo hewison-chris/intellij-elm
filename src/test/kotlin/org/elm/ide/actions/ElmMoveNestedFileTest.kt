@@ -12,24 +12,24 @@ class ElmMoveNestedFileTest : ElmWorkspaceTestBase() {
     }
 
     fun `test change module declaration`() {
-        myFixture.moveFile("src/Name.elm", "src/B/")
-        myFixture.checkResult("src/B/Name.elm",
+        myFixture.moveFile("src/Person.elm", "src/B/")
+        myFixture.checkResult("src/B/Person.elm",
             """
-            module B.Name exposing (Name(..), name)
+            module B.Person exposing (Person(..), person)
             
-            type Name = First | Second
+            type Person = FirstName | SurName
                 
-            name : Name -> String
-            name n =
+            person : Person -> String
+            person n =
                 case n of
-                    First -> "Chris"
-                    Second -> "Hewison"
+                    FirstName -> "Chris"
+                    SurName -> "Hewison"
         """.trimIndent(),
             true)
     }
 
     fun `test change import statements`() {
-        myFixture.moveFile("src/Name.elm", "src/B")
+        myFixture.moveFile("src/Person.elm", "src/B")
         myFixture.checkResult("src/Main.elm",
             """
                 module Main exposing (main)
@@ -37,11 +37,11 @@ class ElmMoveNestedFileTest : ElmWorkspaceTestBase() {
                 import String exposing(concat)
                 
                 import A.Hello
-                import B.Name exposing (Name, name)
+                import B.Person exposing (Person, person)
                 import Html exposing (text)
                 
                 main : Html.Html msg
-                main =  text (concat [(concat [A.Hello.hello, (name B.Name.First)]), (name B.Name.Second)])
+                main =  text (concat [(concat [A.Hello.hello, (person B.Person.FirstName)]), (person B.Person.SurName)])
             """.trimIndent(),
             true)
     }
@@ -94,23 +94,23 @@ class ElmMoveNestedFileTest : ElmWorkspaceTestBase() {
                     import String exposing(concat)
                     
                     import A.Hello
-                    import Name exposing (Name, name)
+                    import Person exposing (Person, person)
                     import Html exposing (text)
                     
                     main : Html.Html msg
-                    main =  text (concat [(concat [A.Hello.hello, (name Name.First)]), (name Name.Second)])
+                    main =  text (concat [(concat [A.Hello.hello, (person Person.FirstName)]), (person Person.SurName)])
                 """.trimIndent()
                 )
-                elm("Name.elm", """
-                    module Name exposing (Name(..), name)
+                elm("Person.elm", """
+                    module Person exposing (Person(..), person)
 
-                    type Name = First | Second
+                    type Person = FirstName | SurName
                     
-                    name : Name -> String
-                    name n =
+                    person : Person -> String
+                    person n =
                         case n of
-                            First -> "Chris"
-                            Second -> "Hewison"
+                            FirstName -> "Chris"
+                            SurName -> "Hewison"
                 """.trimIndent())
             }
         }
