@@ -88,7 +88,7 @@ class ElmWorkspaceConfigurable(
             }
             block("nvm") {
                 val nvmUrl = "https://github.com/nvm-sh/nvm"
-                val docsUrl = "https://github.com/klazuka/intellij-elm/blob/master/docs/nvm.md"
+                val docsUrl = "https://github.com/intellij-elm/intellij-elm/blob/master/docs/nvm.md"
                 noteRow("""Using <a href="$nvmUrl">nvm</a>? Please read <a href="$docsUrl">our troubleshooting tips</a>.""")
             }
         }
@@ -278,8 +278,7 @@ class ElmWorkspaceConfigurable(
             shortcuts.isEmpty() -> "No Shortcut"
             else -> shortcuts.joinToString(", ") { KeymapUtil.getShortcutText(it) }
         }
-        elmFormatShortcutLabel.setHyperlinkText(shortcutStatus + " ", "Change", "")
-        // TODO use: elmFormatShortcutLabel.setTextWithHyperlink("$shortcutStatus ")
+        elmFormatShortcutLabel.setTextWithHyperlink(shortcutStatus)
     }
 
     override fun dispose() {
